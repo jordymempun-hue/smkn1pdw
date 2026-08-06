@@ -1,0 +1,574 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Penata Layanan Operasional - SMKN 1 Pandawai</title>
+    <style>
+
+        /* --- TEMA WARNA SMKN 1 PANDAWAI & STYLE EXCEL --- */
+        :root {
+            --primary: #1e3a8a; /* Biru Tua Instansi */
+            --secondary: #0d9488; /* Hijau Teal Microsoft Excel */
+            --accent: #d97706; /* Emas / Amber */
+            --bg: #f1f5f9; /* Abu-abu Terang Sel Spreadsheet */
+            --text: #0f172a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* --- HEADER INSTANSI --- */
+        .header {
+            text-align: center;
+            border-bottom: 3px double var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 35px;
+        }
+
+            .header h1 {
+                color: var(--primary);
+                margin: 0;
+                font-size: 28px;
+                text-transform: uppercase;
+            }
+
+            .header h2 {
+                color: var(--secondary);
+                margin: 5px 0 0 0;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+        /* --- SUB-HEADER TABEL --- */
+        h3 {
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 50px;
+            font-size: 16px;
+        }
+
+        .excel-table-wrapper {
+            overflow-x: auto;
+            margin-top: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* --- GAYA STRUKTUR TABEL EXCEL --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: #e2e8f0;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #cbd5e1;
+            padding: 6px;
+            background: white;
+        }
+
+        /* Gaya Kotak Input di Dalam Sel */
+        table input, table select {
+            width: 100%;
+            padding: 6px;
+            box-sizing: border-box;
+            border: 1px solid transparent;
+            background: transparent;
+            font-size: 13px;
+        }
+
+            table input:focus, table select:focus {
+                outline: 2px solid var(--secondary);
+                background: #f0fdf4;
+                border-radius: 2px;
+            }
+
+        .excel-readonly {
+            background-color: #f8fafc;
+            font-weight: bold;
+        }
+
+        /* --- TOMBOL AKSI --- */
+        .btn-group {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-add {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+            .btn-add:hover {
+                background-color: #0f766e;
+            }
+
+        .btn-print {
+            background-color: var(--accent);
+            color: white;
+        }
+
+            .btn-print:hover {
+                background-color: #b45309;
+            }
+
+        /* Teks Penampung Hasil Cetakan Kertas */
+        .print-text {
+            display: none;
+            font-size: 13px;
+        }
+
+        /* --- ATURAN SISTEM CETAK PRINT (CSS MEDIA) --- */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .btn-group, input, select, .btn-action {
+                display: none !important;
+            }
+
+            .print-text {
+                display: block !important;
+            }
+
+            th {
+                background-color: #1e3a8a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page-break {
+                page-break-before: always;
+                margin-top: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- JUDUL BESAR -->
+        <div class="header">
+            <h1>SMK Negeri 1 Pandawai</h1>
+            <h2>Aplikasi Lembar Kerja - Bagian Penata Layanan Operasional</h2>
+        </div>
+
+        <!-- ================= 1. TOTAL STOK BARANG ================= -->
+        <h3>1. Data Excel Total Stok Barang (Masuk & Keluar)</h3>
+        <div class="excel-table-wrapper">
+            <table id="table-stok">
+                <thead>
+                    <tr>
+                        <th style="width: 170px;">Tanggal & Waktu</th>
+                        <th>Nama Barang</th>
+                        <th style="width: 100px;">Stok Awal</th>
+                        <th style="width: 100px;">Barang Masuk</th>
+                        <th style="width: 100px;">Barang Keluar</th>
+                        <th style="width: 130px;">Total Stok Akhir</th>
+                        <th style="width: 50px;" class="btn-action">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Diisi otomatis via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-group">
+            <button class="btn-add" onclick="tambahBarisStok()">+ Tambah Baris Excel</button>
+            <button class="btn-print" onclick="cetakLaporan()">Cetak Laporan Laporan</button>
+        </div>
+
+
+        <!-- ================= 2. PEMINJAMAN ALAT ================= -->
+        <div class="page-break"></div>
+        <h3>2. Data Excel Peminjaman & Penggunaan Alat</h3>
+        <div class="excel-table-wrapper">
+            <table id="table-peminjaman">
+                <thead>
+                    <tr>
+                        <th style="width: 170px;">Tanggal & Waktu</th>
+                        <th>Nama Peminjam</th>
+                        <th>Nama / Jenis Alat</th>
+                        <th style="width: 100px;">Jumlah Pinjam</th>
+                        <th>Keperluan Kelompok / Ruang</th>
+                        <th style="width: 140px;">Status Alat</th>
+                        <th style="width: 50px;" class="btn-action">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Diisi otomatis via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-group">
+            <button class="btn-add" onclick="tambahBarisPinjam()">+ Tambah Baris Excel</button>
+        </div>
+
+
+        <!-- ================= 3. PERMINTAAN & PENGADUAN ================= -->
+        <div class="page-break"></div>
+        <h3>3. Data Excel Permintaan Bantuan, Kebutuhan & Pengaduan</h3>
+        <div class="excel-table-wrapper">
+            <table id="table-pengaduan">
+                <thead>
+                    <tr>
+                        <th style="width: 170px;">Tanggal & Waktu</th>
+                        <th style="width: 130px;">Kategori Pengaju</th>
+                        <th>Nama Lengkap</th>
+                        <th style="width: 150px;">Jenis Laporan</th>
+                        <th>Detail Isi Deskripsi Laporan</th>
+                        <th style="width: 130px;">Status Tindakan</th>
+                        <th style="width: 50px;" class="btn-action">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Diisi otomatis via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-group">
+            <button class="btn-add" onclick="tambahBarisAduan()">+ Tambah Baris Excel</button>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. Fungsi Otomatis Mengambil Tanggal & Waktu Sekarang
+        function dapatkanWaktuSekarang() {
+            const kini = new Date();
+            const tgl = String(kini.getDate()).padStart(2, '0');
+            const bln = String(kini.getMonth() + 1).padStart(2, '0');
+            const thn = kini.getFullYear();
+            const jam = String(kini.getHours()).padStart(2, '0');
+            const mnt = String(kini.getMinutes()).padStart(2, '0');
+            return tgl + "/" + bln + "/" + thn + " " + jam + ":" + mnt;
+        }
+
+        // 1. EKSEKUSI SAAT HALAMAN WEB DIBUKA
+        window.onload = function () {
+            // Ambil data semua tabel dari memori browser
+            const savedStok = localStorage.getItem('dataTabelStok');
+            const savedPinjam = localStorage.getItem('dataTabelPinjam');
+            const savedAduan = localStorage.getItem('dataTabelAduan');
+
+            // --- Pemulihan Tabel 1 (Stok) ---
+            if (savedStok) {
+                document.querySelector('#table-stok tbody').innerHTML = savedStok;
+                pulihkanNilaiInput('#table-stok tbody');
+            } else {
+                tambahBarisStok(false); // Parameter false agar tidak memicu simpan ganda di awal
+            }
+
+            // --- Pemulihan Tabel 2 (Pinjam) ---
+            if (savedPinjam) {
+                document.querySelector('#table-peminjaman tbody').innerHTML = savedPinjam;
+                pulihkanNilaiInput('#table-peminjaman tbody');
+            } else {
+                tambahBarisPinjam(false);
+            }
+
+            // --- Pemulihan Tabel 3 (Aduan) ---
+            if (savedAduan) {
+                document.querySelector('#table-pengaduan tbody').innerHTML = savedAduan;
+                pulihkanNilaiInput('#table-pengaduan tbody');
+
+                // Warnai ulang dropdown status sesuai data yang berhasil dimuat
+                document.querySelectorAll('#table-pengaduan tbody select').forEach(select => {
+                    if (select.getAttribute('onchange')) warnaiStatusAksi(select, false);
+                });
+            } else {
+                tambahBarisAduan(false);
+            }
+
+            // Aktifkan pemantau ketikan dan perubahan otomatis untuk semua tabel
+            aktifkanAutoSaveListener();
+        };
+
+        // 2. FUNGSI PEMANTAU KETIKAN / INPUT USER secara Real-Time
+        function aktifkanAutoSaveListener() {
+            // Pantau Tabel Stok
+            document.querySelector('#table-stok tbody').addEventListener('input', function (e) {
+                if (e.target.type === 'number') {
+                    hitungStokOtomatis(e.target);
+                }
+                simpanDataOtomatis('#table-stok tbody', 'dataTabelStok');
+            });
+
+            // Pantau Tabel Pinjam
+            document.querySelector('#table-peminjaman tbody').addEventListener('input', function () {
+                simpanDataOtomatis('#table-peminjaman tbody', 'dataTabelPinjam');
+            });
+            document.querySelector('#table-peminjaman tbody').addEventListener('change', function () {
+                simpanDataOtomatis('#table-peminjaman tbody', 'dataTabelPinjam');
+            });
+
+            // Pantau Tabel Aduan
+            document.querySelector('#table-pengaduan tbody').addEventListener('input', function () {
+                simpanDataOtomatis('#table-pengaduan tbody', 'dataTabelAduan');
+            });
+            document.querySelector('#table-pengaduan tbody').addEventListener('change', function () {
+                simpanDataOtomatis('#table-pengaduan tbody', 'dataTabelAduan');
+            });
+        }
+
+        // 3. FUNGSI UTAMA MENYIMPAN DATA KE BROWSER & CLOUD (Bisa diakses antar perangkat)
+function simpanDataOtomatis(selectorTbody, keyStorage) {
+    const tbody = document.querySelector(selectorTbody);
+    if (!tbody) return;
+
+    tbody.querySelectorAll('tr').forEach(baris => {
+        // Simpan nilai Elemen Input (Teks dan Angka) ke dalam HTML
+        baris.querySelectorAll('input').forEach(input => {
+            input.setAttribute('value', input.value);
+            const printText = input.nextElementSibling;
+            if (printText && printText.classList.contains('print-text')) {
+                printText.innerText = input.value;
+            }
+        });
+
+        // Simpan status pilihan Elemen Select (Dropdown) ke dalam HTML
+        baris.querySelectorAll('select').forEach(select => {
+            select.querySelectorAll('option').forEach(opt => {
+                if (opt.value === select.value) {
+                    opt.setAttribute('selected', 'selected');
+                } else {
+                    opt.removeAttribute('selected');
+                }
+            });
+            const printText = select.nextElementSibling;
+            if (printText && printText.classList.contains('print-text')) {
+                printText.innerText = select.value;
+            }
+        });
+    });
+
+    const dataHTML = tbody.innerHTML;
+
+    // A. Tetap simpan di browser lokal (Sebagai cadangan offline cepat)
+    localStorage.setItem(keyStorage, dataHTML);
+
+    // B. SINKRONISASI KE CLOUD/SERVER (Kunci agar bisa dibuka di perangkat berbeda)
+    // Ganti URL '/api/simpan-tabel' sesuai dengan endpoint backend Anda
+    fetch('/api/simpan-tabel', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // Gunakan token user jika aplikasi Anda mewajibkan sistem login/akun
+            'Authorization': `Bearer ${localStorage.getItem('user_token')}` 
+        },
+        body: JSON.stringify({
+            id_tabel: keyStorage,
+            html_konten: dataHTML
+        })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Gagal sinkronisasi ke cloud');
+        return response.json();
+    })
+    .then(res => console.log('Data berhasil disinkronkan antar perangkat:', res))
+    .catch(err => console.warn('Gagal menyimpan ke cloud (Aplikasi berjalan offline):', err));
+}
+
+        // 4. FUNGSI MEMULIHKAN NILAI INPUT SETELAH REFRESH
+        function pulihkanNilaiInput(selectorTbody) {
+            const tbody = document.querySelector(selectorTbody);
+            if (!tbody) return;
+
+            tbody.querySelectorAll('tr').forEach(baris => {
+                baris.querySelectorAll('input').forEach(input => {
+                    input.value = input.getAttribute('value') || '';
+                });
+                baris.querySelectorAll('select').forEach(select => {
+                    const selectedOpt = select.querySelector('option[selected]');
+                    if (selectedOpt) {
+                        select.value = selectedOpt.value;
+                    }
+                });
+            });
+        }
+
+        // 5. FORMULA RUMUS EXCEL: Hitung Stok Tabel 1 (Anti-Macet)
+        function hitungStokOtomatis(elemen) {
+            const baris = elemen.closest('tr');
+            const inputs = baris.querySelectorAll('input[type="number"]');
+
+            const stokAwal = parseInt(inputs[0].value) || 0;
+            const masuk = parseInt(inputs[1].value) || 0;
+            const keluar = parseInt(inputs[2].value) || 0;
+
+            // Masukkan hasil ke kolom indeks ke-3 (Stok Akhir)
+            inputs[3].value = stokAwal + masuk - keluar;
+        }
+
+        // 6. SKRIP TAMBAH BARIS TABEL 1 (Stok Barang)
+        function tambahBarisStok(pemicuSimpan = true) {
+            const tbody = document.querySelector('#table-stok tbody');
+            const tr = document.createElement('tr');
+            const waktuKini = dapatkanWaktuSekarang();
+
+            tr.innerHTML = '<td>' + waktuKini + '<span class="print-text">' + waktuKini + '</span></td>' +
+                '<td><input type="text" placeholder="Ketik nama barang..."><span class="print-text"></span></td>' +
+                '<td><input type="number" value="0" oninput="hitungStokOtomatis(this)"><span class="print-text">0</span></td>' +
+                '<td><input type="number" value="0" oninput="hitungStokOtomatis(this)"><span class="print-text">0</span></td>' +
+                '<td><input type="number" value="0" oninput="hitungStokOtomatis(this)"><span class="print-text">0</span></td>' +
+                '<td class="excel-readonly"><input type="number" value="0" readonly class="excel-readonly"><span class="print-text" style="font-weight:bold;">0</span></td>' +
+                '<td class="btn-action" style="text-align:center;"><button type="button" onclick="hapusBarisSel(this)" style="background:#e11d48; color:white; padding:4px 8px; border-radius:3px;">❌</button></td>';
+            tbody.appendChild(tr);
+
+            if (pemicuSimpan) {
+                simpanDataOtomatis('#table-stok tbody', 'dataTabelStok');
+            }
+        }
+
+        // 7. SKRIP TAMBAH BARIS TABEL 2 (Peminjaman Alat)
+        function tambahBarisPinjam(pemicuSimpan = true) {
+            const tbody = document.querySelector('#table-peminjaman tbody');
+            const tr = document.createElement('tr');
+            const waktuKini = dapatkanWaktuSekarang();
+
+            tr.innerHTML = '<td>' + waktuKini + '<span class="print-text">' + waktuKini + '</span></td>' +
+                '<td><input type="text" placeholder="Nama peminjam..."><span class="print-text"></span></td>' +
+                '<td><input type="text" placeholder="Nama/jenis alat..."><span class="print-text"></span></td>' +
+                '<td><input type="number" value="1"><span class="print-text">1</span></td>' +
+                '<td><input type="text" placeholder="Keperluan ruang..."><span class="print-text"></span></td>' +
+                '<td><select><option value="Sedang Dipinjam">Sedang Dipinjam</option><option value="Sudah Kembali">Sudah Kembali</option><option value="Rusak/Hilang">Rusak/Hilang</option></select><span class="print-text">Sedang Dipinjam</span></td>' +
+                '<td class="btn-action" style="text-align:center;"><button type="button" onclick="hapusBarisSel(this)" style="background:#e11d48; color:white; padding:4px 8px; border-radius:3px;">❌</button></td>';
+            tbody.appendChild(tr);
+
+            if (pemicuSimpan) {
+                simpanDataOtomatis('#table-peminjaman tbody', 'dataTabelPinjam');
+            }
+        }
+
+        // 8. SKRIP TAMBAH BARIS TABEL 3 (Permintaan & Pengaduan)
+        function tambahBarisAduan(pemicuSimpan = true) {
+            const tbody = document.querySelector('#table-pengaduan tbody');
+            const tr = document.createElement('tr');
+            const waktuKini = dapatkanWaktuSekarang();
+
+            tr.innerHTML = '<td>' + waktuKini + '<span class="print-text">' + waktuKini + '</span></td>' +
+                '<td><select><option value="Guru">Guru</option><option value="Pimpinan">Pimpinan</option><option value="Pegawai">Pegawai</option><option value="Siswa/wi">Siswa/wi</option></select><span class="print-text">Guru</span></td>' +
+                '<td><input type="text" placeholder="Nama lengkap..."><span class="print-text"></span></td>' +
+                '<td><select><option value="Permintaan Bantuan">Permintaan Bantuan</option><option value="Kebutuhan Barang">Kebutuhan Barang</option><option value="Pengaduan / Masalah">Pengaduan / Masalah</option></select><span class="print-text">Permintaan Bantuan</span></td>' +
+                '<td><input type="text" placeholder="Detail isi deskripsi laporan..."><span class="print-text"></span></td>' +
+                '<td><select onchange="warnaiStatusAksi(this)" style="color: #b45309; font-weight: bold;"><option value="Diproses" style="color: #b45309;">⏳ Diproses</option><option value="Selesai" style="color: #0d9488;">✅ Selesai</option><option value="Ditolak" style="color: #e11d48;">❌ Ditolak</option></select><span class="print-text" style="font-weight: bold;">Diproses</span></td>' +
+                '<td class="btn-action" style="text-align:center;"><button type="button" onclick="hapusBarisSel(this)" style="background:#e11d48; color:white; padding:4px 8px; border-radius:3px;">❌</button></td>';
+            tbody.appendChild(tr);
+
+            if (pemicuSimpan) {
+                simpanDataOtomatis('#table-pengaduan tbody', 'dataTabelAduan');
+            }
+        }
+
+        // 9. MEWARNAI PILIHAN STATUS DI TABEL 3
+        function warnaiStatusAksi(elemen, pemicuSimpan = true) {
+            if (elemen.value === "Diproses") elemen.style.color = "#b45309";
+            else if (elemen.value === "Selesai") elemen.style.color = "#0d9488";
+            else if (elemen.value === "Ditolak") elemen.style.color = "#e11d48";
+
+            // Simpan otomatis perubahan warna status jika dipicu oleh aksi langsung user
+            if (pemicuSimpan) {
+                simpanDataOtomatis('#table-pengaduan tbody', 'dataTabelAduan');
+            }
+        }
+
+        // 10. FUNGSI HAPUS BARIS DATA
+        function hapusBarisSel(tombol) {
+            if (confirm("Apakah Anda ingin menghapus baris data Excel ini?")) {
+                const tbody = tombol.closest('tbody');
+                const tabelId = tbody.closest('table').id;
+
+                // Hapus baris dari layar
+                tombol.closest('tr').remove();
+
+                // Cari tahu asal tabel yang dihapus lalu perbarui simpanannya di browser
+                if (tabelId === 'table-stok') {
+                    simpanDataOtomatis('#table-stok tbody', 'dataTabelStok');
+                } else if (tabelId === 'table-peminjaman') {
+                    simpanDataOtomatis('#table-peminjaman tbody', 'dataTabelPinjam');
+                } else if (tabelId === 'table-pengaduan') {
+                    simpanDataOtomatis('#table-pengaduan tbody', 'dataTabelAduan');
+                }
+            }
+        }
+
+        // BONUS: FUNGSI RESET DATA (Opsional)
+        // Panggil fungsi ini jika Anda ingin menghapus semua simpanan otomatis di browser
+        function bersihkanSemuaPenyimpanan() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh data yang tersimpan di browser?")) {
+                localStorage.removeItem('dataTabelStok');
+                localStorage.removeItem('dataTabelPinjam');
+                localStorage.removeItem('dataTabelAduan');
+                location.reload(); // Muat ulang halaman untuk kembali ke setelan awal
+            }
+        }
+
+        // 5. FUNGSI CETAK LAPORAN (Menyalin data input ke teks cetak kertas)
+        function cetakLaporan() {
+            const barisTabel = document.querySelectorAll('tbody tr');
+            barisTabel.forEach(baris => {
+                const inputs = baris.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    const textSpan = input.nextElementSibling;
+                    if (textSpan && textSpan.classList.contains('print-text')) {
+                        if (input.tagName === 'SELECT') {
+                            textSpan.innerText = input.options[input.selectedIndex].text;
+                        } else {
+                            textSpan.innerText = input.value || '-';
+                        }
+                    }
+                });
+            });
+            window.print();
+        }
+    </script>
+    <!-- Tombol kembali ke dashboard (halaman4) -->
+    <div class="actions-container" style="margin-top: 20px;">
+        <a href="index.html" class="btn-back">Kembali ke Dashboard</a>
+    </div>
