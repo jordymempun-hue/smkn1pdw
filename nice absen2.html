@@ -1,0 +1,647 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi SMK Negeri 1 Pandawai</title>
+    <style>
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        /* Pengaturan Wadah KOP agar Logo Sejajar di Tengah Judul */
+        .kop-container {
+            display: flex;
+            align-items: center;
+            border-bottom: 4px double #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        /* Mengunci Tinggi Logo 2.2cm & Lebar Proporsional 80% (1.76cm) */
+        .kop-logo-custom {
+            height: 2.2cm !important;
+            width: calc(2.2cm * 0.8) !important;
+            object-fit: contain;
+        }
+
+        .kop-teks {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+            .kop-teks h4 {
+                margin: 0;
+                font-size: 14px;
+                text-transform: uppercase;
+                font-weight: normal;
+            }
+
+            .kop-teks h3 {
+                margin: 2px 0;
+                font-size: 16px;
+                text-transform: uppercase;
+            }
+
+            .kop-teks h2 {
+                margin: 2px 0;
+                font-size: 18px;
+                text-transform: uppercase;
+                font-weight: bold;
+            }
+
+            .kop-teks p {
+                margin: 2px 0;
+                font-size: 11px;
+                font-style: italic;
+            }
+
+        /* Layout Grid */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Style Tabel */
+        .table-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        select, input[type="time"] {
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        /* Style Grafik Native */
+        .chart-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .chart-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+            .chart-box h4 {
+                text-align: center;
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+
+        /* CSS Diagram Batang Murni */
+        .bar-row {
+            margin-bottom: 10px;
+        }
+
+        .bar-label {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .bar-track {
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            height: 20px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 5px;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* CSS Diagram Oval Murni */
+        .oval-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin: 0 auto;
+            width: 140px;
+            height: 140px;
+        }
+
+        .oval-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .oval-segment {
+            fill: none;
+            stroke-width: 32;
+            transition: stroke-dasharray 0.4s ease, stroke-dashoffset 0.4s ease;
+        }
+
+        .oval-legend {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            font-size: 11px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Wadah Khusus untuk Cetak Bersama */
+        .print-together-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* ====================================================
+           PENGATURAN KHUSUS CETAK A4 LANDSCAPE BERWARNA
+           ==================================================== */
+        @media print {
+            @page {
+                size: A4 landscape; /* Kunci ukuran kertas ke A4 Mendatar */
+                margin: 10mm; /* Atur batas margin kertas */
+            }
+
+            body {
+                background-color: #fff;
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .action-buttons {
+                display: none !important; /* Hilangkan tombol kontrol */
+            }
+
+            .main-content {
+                display: block !important; /* Menghilangkan grid agar tabel memanjang penuh */
+            }
+
+            .table-section {
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin-bottom: 30px;
+                page-break-after: auto;
+            }
+            /* Kunci agar bagian ini TIDAK BOLEH TERPOTONG ke halaman lain */
+            .print-together-group {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+
+            .chart-section {
+                box-shadow: none !important;
+                padding: 10px 0 !important;
+                display: flex !important;
+                flex-direction: row !important; /* Buat diagram berjejer kiri-kanan di lembar landscape */
+                justify-content: space-around !important;
+            }
+
+            .bar-track {
+                background: #eee !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .bar-fill {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .signature-section {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: flex-end !important;
+                margin-top: 30px !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. KOP SURAT SMK NEGERI 1 PANDAWAI (LOGO GANDA KIRI & KANAN) -->
+    <div class="kop-container">
+        <!-- Logo Kiri (Contoh: Logo Provinsi / Tut Wuri) -->
+        <img class="kop-logo-custom" src="Logo prov NTT.png" alt="Logo Kiri">
+
+        <!-- Teks Judul KOP Tengah -->
+        <div class="kop-teks">
+            <h4>Pemerintah Provinsi Nusa Tenggara Timur</h4>
+            <h3>Dinas Pendidikan dan Kebudayaan</h3>
+            <h2>SMK Negeri 1 Pandawai</h2>
+            <p>Jl. Raya Palakahembi - Melolo, Kecamatan Pandawai, Kabupaten Sumba Timur, NTT</p>
+            <p>Email: smkn1.pandawai@gmail.com | NPSN: 69954192 </p>
+        </div>
+
+        <!-- Logo Kanan (Contoh: Logo SMK Negeri 1 Pandawai) -->
+        <img class="kop-logo-custom" src="LOGO SEKOLAH.png" alt="Logo Kanan">
+    </div>
+
+    <!-- TOMBOL NAVIGASI & CETAK -->
+    <div class="action-buttons" style="margin-bottom: 20px; display: flex; gap: 10px;">
+        <button onclick="window.location.href='index.html';" style="padding: 10px 15px; background-color: #6c757d; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            ⬅️ Kembali ke Halaman Utama
+        </button>
+        <button onclick="window.print();" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            🖨️ Cetak Laporan Harian
+        </button>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="main-content">
+
+        <!-- 2. TABEL ABSENSI -->
+        <div class="table-section">
+            <h3 style="margin-top:0;">Daftar Presensi Kehadiran</h3>
+            <p style="font-size: 12px; color: green; font-weight: bold; margin-bottom: 15px;">* Perubahan status kehadiran langsung memperbarui grafik secara otomatis!</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama & NIP Personel</th>
+                        <th>Jabatan</th>
+                        <th>Status Kehadiran</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-absen-body">
+                    <!-- Data dibuat oleh JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- KELOMPOK CETAK BERSAMA (Diagram + Tanda Tangan Terkunci dalam 1 Halaman Akhir) -->
+        <div class="print-together-group">
+
+            <!-- 3. GRAFIK PENILAIAN -->
+            <div class="chart-section">
+                <!-- Diagram Batang Kehadiran -->
+                <div class="chart-box">
+                    <h4>Diagram Batang Kehadiran Personel</h4>
+                    <div id="bar-chart-wrapper"></div>
+                </div>
+
+                <!-- Diagram Oval Kehadiran -->
+                <div class="chart-box">
+                    <h4>Diagram Oval Kehadiran Personel</h4>
+                    <div class="oval-container">
+                        <svg class="oval-svg" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="15.91549430918954" fill="none" stroke="#eee" stroke-width="32"></circle>
+                            <g id="oval-segments-group"></g>
+                        </svg>
+                    </div>
+                    <div class="oval-legend" id="oval-legend-wrapper"></div>
+                </div>
+            </div>
+
+            <!-- LEGITIMASI TANDA TANGAN (Space Ideal untuk Tanda Tangan, Cap, & Meterai) -->
+            <div style="margin-top: 50px; page-break-inside: avoid !important; break-inside: avoid !important;">
+
+                <!-- Baris Atas: Tempat, Hari/Tanggal, Waktu WITA Otomatis -->
+                <div style="text-align: right; margin-bottom: 15px; padding-right: 40px;">
+                    <span id="tanggal-waktu-otomatis" style="font-size: 13px; color: #111; font-weight: normal; display: inline-block;">Pandawai, ...</span>
+                </div>
+
+                <!-- Wadah Utama Tanda Tangan Kiri & Kanan (Tinggi dinaikkan ke 180px agar space cap/stempel sangat luas) -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+
+                    <!-- Kiri Bawah: Tata Usaha -->
+                    <div style="text-align: center; width: 280px; display: flex; flex-direction: column; height: 180px; justify-content: space-between;">
+                        <div>
+                            <p style="margin: 0; font-weight: bold; margin-bottom: 5px;">Mengetahui</p>
+                            <p style="font-weight: bold; margin: 0;">Tata Usaha,</p>
+                        </div>
+                        <!-- Space kosong bersih setinggi 90px untuk Tanda Tangan & Cap stempel TU -->
+                        <div style="margin-top: 90px;">
+                            <p style="font-weight: bold; text-decoration: underline; margin: 0 0 2px 0;">( .......................... )</p>
+                            <p style="font-size: 12px; color: #333; margin: 0;">NIP. .......................... </p>
+                        </div>
+                    </div>
+
+                    <!-- Kanan Bawah: Kepala Sekolah -->
+                    <div style="text-align: center; width: 280px; display: flex; flex-direction: column; height: 180px; justify-content: space-between;">
+                        <div>
+                            <p style="margin: 0; font-weight: bold; margin-bottom: 5px;">Mengesahkan</p>
+                            <p style="font-weight: bold; margin: 0;">Kepala SMK Negeri 1 Pandawai,</p>
+                        </div>
+                        <!-- Space kosong bersih setinggi 90px untuk Tanda Tangan, Meterai, & Cap stempel Sekolah -->
+                        <div style="margin-top: 90px;">
+                            <p style="font-weight: bold; text-decoration: underline; margin: 0 0 2px 0;">( DOMINIK W. TENGGU, SH.,Gr )</p>
+                            <p style="font-size: 12px; color: #333; margin: 0;">NIP. 19771231 200903 1 015 </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div> <!-- Akhir print-together-group -->
+
+    </div> <!-- Akhir main-content -->
+
+    <script>
+                // Kategori dan Perbaikan Bobot Nilai Kehadiran Terbaru
+        const kategoriAbsen = [
+            { key: 'Hadir', label: 'Hadir (100%)', color: '#28a745' },
+            { key: 'Tugas Luar', label: 'Tugas Luar (100%)', color: '#007bff' },
+            { key: 'Izin', label: 'Izin (50%)', color: '#ffc107' },
+            { key: 'Sakit', label: 'Sakit (50%)', color: '#17a2b8' },
+            { key: 'Tanpa Berita', label: 'Tanpa Berita (0%)', color: '#dc3545' }
+        ];
+
+        // DATA PERMANEN PERSONEL ASLI SMK NEGERI 1 PANDAWAI
+        const pegawaiList = [
+            // === GURU (30 ORANG) ===
+            { id: "G-1", nama: "DOMINIK WUTA TENGGU, SH.,Gr", nip: "197712312009031015", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-2", nama: "SAMUEL REMIANDUNG, S.Pd.,Gr", nip: "196910292022211003", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-3", nama: "Drh. BIATIN", nip: "197906142024212009", peran: "Guru", defMasuk: "06:55", defPulang: "14:00" },
+            { id: "G-4", nama: "BONEFASIUS SAMBO, S.Pi.,Gr", nip: "198008112009031006", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-5", nama: "HABIBA BINTI UMAR, S.Pd.,Gr", nip: "198012142008032001", peran: "Guru", defMasuk: "06:45", defPulang: "14:00" },
+            { id: "G-6", nama: "MARLENI ANTONETA RAMBU KARERI TOGA, S.P.,Gr", nip: "198103032009042005", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-7", nama: "YAKUB HINA DJANGGA KADU", nip: "198406022011011016", peran: "Guru", defMasuk: "06:50", defPulang: "14:00" },
+            { id: "G-8", nama: "ENDANG EKAFITRIARTI", nip: "198506202022212056", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-9", nama: "LISYE NOVA NATHALIA FANGGIDAE", nip: "198510192024212011", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-10", nama: "AGUSTINA DJOLI", nip: "198608182025212170", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-11", nama: "HASMIN SALAWALI", nip: "198704022015041001", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-12", nama: "MARTA KE", nip: "198903152022212021", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-13", nama: "RAMBU ANA HUNGGUJAWA", nip: "198908072024212029", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-14", nama: "MARNI RADA", nip: "199102202025212142", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-15", nama: "LIAN KAHI LEABA", nip: "199104112025212054", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-16", nama: "HERLYN A.G. MALORUNG", nip: "199104172025212184", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-17", nama: "MARTHA MARA", nip: "199110082025212177", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-18", nama: "YOKSANATINUS", nip: "199201312025212030", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-19", nama: "ABRAHAM ADI NATHAN", nip: "199204052026211001", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-20", nama: "YUBLINA KANDOKANG MADIK", nip: "199307112025212156", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-21", nama: "SURYANTI KAITA LAPIR", nip: "199406242025212061", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-22", nama: "ALFINAYAKOBA SAMUEL", nip: "199408112025212038", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-23", nama: "FERY HABAITA PALANGANG", nip: "199409022025211026", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-24", nama: "ANGGRIANI LOBO", nip: "199504202025212163", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-25", nama: "LAMBERT LEBA LULU", nip: "199508252022211013", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-26", nama: "YOLANDA LOWA BHAE", nip: "199509122025212037", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-27", nama: "FERI M. ALEUT", nip: "199602142025211029", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-28", nama: "HERLOVINA HAE", nip: "199604042025212183", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-29", nama: "PAULUS ANGELINO SERAN", nip: "199604302025211041", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "G-30", nama: "MOLDI NIKOLAS NONI", nip: "199705312025211027", peran: "Guru", defMasuk: "07:00", defPulang: "14:00" },
+
+            // === TENDIK (3 ORANG) ===
+            { id: "TA-1", nama: "MARIA GONSIANI ATI ADUR", nip: "198907062025212187", peran: "Tendik", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "TA-2", nama: "WILHELMUS KUARA JANGGA UMA", nip: "199304052025211180", peran: "Tendik", defMasuk: "07:00", defPulang: "14:00" },
+            { id: "TA-3", nama: "JORDY FORTUNATUS MEMPUN", nip: "199805012025211094", peran: "Tendik", defMasuk: "07:00", defPulang: "14:00" },
+
+            // === TEKNIS (3 ORANG) ===
+            { id: "TE-1", nama: "Pak Dev", nip: "......", peran: "Teknis", defMasuk: "07:00", defPulang: "15:00" },
+            { id: "TE-2", nama: "Pak Chris", nip: "......", peran: "Teknis", defMasuk: "06:55", defPulang: "15:00" },
+            { id: "TE-3", nama: "Pak Elvis", nip: "......", peran: "Teknis", defMasuk: "07:00", defPulang: "15:00" }
+        ];
+
+        // Memuat database lokal browser
+        let dataAbsensiMasingMasing = JSON.parse(localStorage.getItem('smk_absen_data')) || {};
+
+        // Sinkronisasi status awal (bawaan diset Hadir dan jam masuk diatur berdasarkan peran)
+        pegawaiList.forEach(p => {
+            if (!dataAbsensiMasingMasing[p.id]) {
+                dataAbsensiMasingMasing[p.id] = { status: 'Hadir', masuk: p.defMasuk, pulang: p.defPulang };
+            }
+        });
+
+        // Menampilkan data ke baris tabel HTML
+        const tbody = document.getElementById('tabel-absen-body');
+        pegawaiList.forEach((p, index) => {
+            const currentData = dataAbsensiMasingMasing[p.id];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td style="text-align: left;">
+                    <div style="font-weight: bold; color: #111;">${p.nama}</div>
+                    <div style="font-size: 11px; color: #555; margin-top: 2px;">NIP: ${p.nip}</div>
+                </td>
+                <td><span style="padding: 2px 6px; border-radius:4px; font-size:11px; background:#e0e0e0;">${p.peran}</span></td>
+                <td>
+                    <select onchange="updateAbsen('${p.id}', 'status', this.value, event)">
+                        ${kategoriAbsen.map(k => `<option value="${k.key}" ${currentData.status === k.key ? 'selected' : ''}>${k.label}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="time" value="${currentData.masuk}" onchange="updateAbsen('${p.id}', 'masuk', this.value, event)"></td>
+                <td><input type="time" value="${currentData.pulang}" onchange="updateAbsen('${p.id}', 'pulang', this.value, event)"></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Fungsi Kalkulasi dan Menggambar Grafik secara Live
+        function perbaruiGrafikPenilaian() {
+            const totalPegawai = pegawaiList.length;
+            let hitungStatus = { 'Hadir': 0, 'Tugas Luar': 0, 'Izin': 0, 'Sakit': 0, 'Tanpa Berita': 0 };
+
+            pegawaiList.forEach(p => {
+                const status = dataAbsensiMasingMasing[p.id].status;
+                hitungStatus[status]++;
+            });
+
+                        // 1. RENDER DIAGRAM BATANG (Teks Persentase di Luar Samping Kanan)
+            const barWrapper = document.getElementById('bar-chart-wrapper');
+            barWrapper.innerHTML = '';
+            kategoriAbsen.forEach(kat => {
+                const jumlah = hitungStatus[kat.key];
+                const persentasePanjangBar = totalPegawai > 0 ? (jumlah / totalPegawai) * 100 : 0;
+
+                barWrapper.innerHTML += `
+                    <div class="bar-row" style="margin-bottom: 12px;">
+                        <div class="bar-label" style="font-size: 12px; font-weight: bold; margin-bottom: 2px;">
+                            ${kat.label}: ${jumlah} Orang
+                        </div>
+                        <!-- Flex container untuk menyejajarkan balok dan teks persentase luar -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="bar-track" style="flex-grow: 1; background: #eee; border-radius: 4px; overflow: hidden; height: 20px;">
+                                <div class="bar-fill" style="width: ${persentasePanjangBar}%; background-color: ${kat.color}; height: 100%; transition: width 0.4s ease;">
+                                    <!-- Di dalam balok dikosongkan -->
+                                </div>
+                            </div>
+                            <!-- Teks Angka Persentase di Luar Samping Kanan Balok -->
+                            <div style="font-size: 12px; font-weight: bold; color: #333; min-width: 40px; text-align: left;">
+                                ${jumlah > 0 ? Math.round(persentasePanjangBar) + '%' : '0%'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+                        // 2. RENDER DIAGRAM OVAL (SVG DONUT) + ANALISIS PREDIKAT HASIL PENILAIAN
+            const gOval = document.getElementById('oval-segments-group');
+            const legendWrapper = document.getElementById('oval-legend-wrapper');
+            gOval.innerHTML = '';
+            legendWrapper.innerHTML = '';
+
+            // Perhitungan Total Nilai Kinerja Sekolah Berdasarkan Bobot Terbaru
+            let totalSkorKinerja = 0;
+            pegawaiList.forEach(p => {
+                const status = dataAbsensiMasingMasing[p.id].status;
+                if (status === 'Hadir' || status === 'Tugas Luar') totalSkorKinerja += 100;
+                else if (status === 'Izin' || status === 'Sakit') totalSkorKinerja += 50;
+                else totalSkorKinerja += 0;
+            });
+
+            // Menghitung Rata-rata Persentase Nilai Kehadiran Sekolah
+            const rataRataNilai = totalPegawai > 0 ? (totalSkorKinerja / totalPegawai) : 0;
+
+            // Logika Penentuan Predikat Sesuai Instruksi Anda
+            let predikatHasil = "";
+            let warnaPredikat = "#dc3545"; // Default merah
+
+            if (rataRataNilai === 100) {
+                predikatHasil = "Sangat Memuaskan";
+                warnaPredikat = "#28a745"; // Hijau
+            } else if (rataRataNilai >= 90) {
+                predikatHasil = "Memuaskan";
+                warnaPredikat = "#007bff"; // Biru
+            } else if (rataRataNilai >= 80) {
+                predikatHasil = "Baik"; // Batas aman antara Memuaskan dan Buruk
+                warnaPredikat = "#ffc107"; // Kuning
+            } else if (rataRataNilai >= 70) {
+                predikatHasil = "Buruk";
+                warnaPredikat = "#fd7e14"; // Oranye
+            } else {
+                predikatHasil = "Prestasi Rendah Evaluasi";
+                warnaPredikat = "#dc3545"; // Merah
+            }
+
+            // Gambar Segmen Oval (SVG)
+            let akumulasiPersen = 0;
+            kategoriAbsen.forEach(kat => {
+                const jumlah = hitungStatus[kat.key];
+                const persen = totalPegawai > 0 ? (jumlah / totalPegawai) * 100 : 0;
+
+                if (persen > 0) {
+                    const strokeDashArray = `${persen} ${100 - persen}`;
+                    const strokeDashOffset = 100 - akumulasiPersen;
+
+                    gOval.innerHTML += `
+                        <circle class="oval-segment" cx="50" cy="50" r="15.91549430918954" fill="none"
+                                stroke="${kat.color}" stroke-width="20"
+                                stroke-dasharray="${strokeDashArray}" stroke-dashoffset="${strokeDashOffset}"></circle>
+                    `;
+                    akumulasiPersen += persen;
+                }
+
+                // Legenda di bawah diagram oval
+                legendWrapper.innerHTML += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: ${kat.color};"></div>
+                        <div>${kat.key} (${jumlah})</div>
+                    </div>
+                `;
+            });
+
+            // Menambahkan Box Hasil Penilaian Predikat Tepat di Bawah Diagram Oval
+            legendWrapper.innerHTML += `
+                <div style="grid-column: span 2; margin-top: 15px; padding: 10px; background: #f8f9fa; border-left: 4px solid ${warnaPredikat}; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #666; letter-spacing: 0.5px;">Kinerja Kehadiran Kolektif</div>
+                    <div style="font-size: 16px; font-weight: bold; color: ${warnaPredikat}; margin: 4px 0;">${Math.round(rataRataNilai)}%</div>
+                    <div style="font-size: 13px; font-weight: bold; color: #111;">Predikat: ${predikatHasil}</div>
+                </div>
+            `;
+
+                        // OTOMATISASI TEMPAT, HARI, TANGGAL, DAN WAKTU (WITA) REAL-TIME
+            const opsiHariTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const hariTanggal = new Date().toLocaleDateString('id-ID', opsiHariTanggal);
+            const jamMenit = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+
+            // Masukkan teks ke elemen HTML
+            document.getElementById('tanggal-waktu-otomatis').innerText = `Pandawai, ${hariTanggal} | ${jamMenit} WITA`;
+        }
+
+        // Fungsi Simpan Ke LocalStorage & Trigger Jam Cerdas Sesuai Profil Pegawai
+        function updateAbsen(id, field, value, event) {
+            dataAbsensiMasingMasing[id][field] = value;
+
+            if (field === 'status') {
+                const trPilihan = event.target.closest('tr');
+                const inputs = trPilihan.querySelectorAll('input[type="time"]');
+                const inputMasuk = inputs[0];
+                const inputPulang = inputs[1];
+                const pData = pegawaiList.find(p => p.id === id);
+
+                if (value === 'Hadir' || value === 'Tugas Luar') {
+                    inputMasuk.value = pData.defMasuk; dataAbsensiMasingMasing[id]['masuk'] = pData.defMasuk;
+                    inputPulang.value = pData.defPulang; dataAbsensiMasingMasing[id]['pulang'] = pData.defPulang;
+                } else {
+                    inputMasuk.value = ""; dataAbsensiMasingMasing[id]['masuk'] = "";
+                    inputPulang.value = ""; dataAbsensiMasingMasing[id]['pulang'] = "";
+                }
+            }
+
+            localStorage.setItem('smk_absen_data', JSON.stringify(dataAbsensiMasingMasing));
+            perbaruiGrafikPenilaian();
+        }
+
+        perbaruiGrafikPenilaian();
+
+    </script>
+</body>
+</html>
