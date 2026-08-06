@@ -1,0 +1,433 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Layanan - SMK Negeri 1 Pandawai</title>
+    <!-- Menggunakan Font Awesome untuk Logo/Ikon yang Relevan -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* Container Menu Profil */
+        .user-profile-menu {
+            position: relative;
+            display: inline-block;
+            float: right; /* Menyeimbangkan posisi di kanan */
+            margin-bottom: 20px;
+        }
+
+        /* Tombol Pemicu Dropdown */
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+            .profile-trigger:hover {
+                background: #f9f9f9;
+            }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Kotak Dropdown Menu */
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: 110%;
+            width: 200px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+            padding: 8px 0;
+            display: none; /* Disembunyikan secara default */
+            z-index: 100;
+        }
+
+        /* Menampilkan dropdown ketika menu aktif */
+        .user-profile-menu.active .profile-dropdown {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #444;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+            .dropdown-item:hover {
+                background: #f5f5f5;
+            }
+
+            /* Desain Khusus Tombol Log Out di dalam Dropdown */
+            .dropdown-item.logout {
+                color: #d93838;
+                border-top: 1px solid #eee;
+                margin-top: 5px;
+                font-weight: 600;
+            }
+
+                .dropdown-item.logout:hover {
+                    background: #fff5f5;
+                }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #d93838;
+            color: #333;
+            padding: 20px;
+        }
+
+        /* Header Tema Sekolah */
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+            header h1 {
+                font-size: 24px;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            header p {
+                font-size: 14px;
+                opacity: 0.9;
+            }
+
+        /* Widget Info Timemark & Cuaca */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .info-item i {
+                color: #2a5298;
+                font-size: 18px;
+            }
+
+        /* Grid Kotak Informasi */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Desain Kotak (Card) */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border-top: 5px solid #2a5298;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background-image: url('LOGO SEKOLAH.png'); /* Masukkan path gambar di sini */
+            background-size: cover; /* Memastikan gambar memenuhi area kotak */
+            background-position: center; /* Memastikan gambar berada di tengah */
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #2a5298;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: #222;
+        }
+
+        .card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Tombol dan Link */
+        .btn-main {
+            display: inline-block;
+            text-align: center;
+            background: #2a5298;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+            .btn-main:hover {
+                background: #1e3c72;
+            }
+
+        /* Dropdown/Grup Tahun untuk Kinerja */
+        .year-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-year {
+            display: block;
+            text-align: center;
+            background: #f0f4f8;
+            color: #2a5298;
+            padding: 8px 0;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+            .btn-year:hover {
+                background: #2a5298;
+                color: #fff;
+            }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .info-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Tema Sekolah -->
+    <header>
+        <h1>SMK Negeri 1 Pandawai</h1>
+        <p>Ruang Penata Layanan Operasional</p>
+    </header>
+    <div class="user-profile-menu" id="profileMenu">
+        <div class="profile-trigger" onclick="toggleDropdown()">
+            <div class="profile-avatar">SMK</div>
+            <span>Admin SMKN 1</span>
+            <svg xmlns="http://w3.org" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 284Z" /></svg>
+        </div>
+
+        <div class="profile-dropdown">
+            <a href="#" class="dropdown-item">Akun Saya</a>
+            <a href="#" class="dropdown-item">Pengaturan</a>
+            <a href="index.html" class="dropdown-item logout">
+                <svg xmlns="http://w3.org" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" /></svg>
+                Keluar
+            </a>
+        </div>
+    </div>
+
+    <!-- Script Singkat untuk Mengaktifkan Klik Dropdown -->
+    <script>
+        function toggleDropdown() {
+            document.getElementById('profileMenu').classList.toggle('active');
+        }
+        // Menutup dropdown jika pengguna mengklik di luar area menu
+        window.onclick = function (event) {
+            if (!event.target.closest('.user-profile-menu')) {
+                document.getElementById('profileMenu').classList.remove('active');
+            }
+        }
+    </script>
+
+    <!-- Info Waktu, Lokasi, & Cuaca Realtime (BMKG simulasi) -->
+    <div class="info-bar">
+        <div class="info-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <span id="lokasi">Pandawai, East Sumba, NTT</span>
+        </div>
+        <div class="info-item">
+            <i class="fa-solid fa-clock"></i>
+            <span id="waktu">Memuat waktu...</span>
+        </div>
+        <div class="info-item">
+            <i class="fa-solid fa-cloud-sun"></i>
+            <span id="cuaca">Prediksi BMKG: Cerah Berawan (28°C)</span>
+        </div>
+    </div>
+
+    <!-- Grid Kotak Informasi -->
+    <div class="grid-container">
+
+        <!-- 1. Profil & Visi Misi -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-school"></i></div>
+                <h3>Profil & Visi Misi</h3>
+            </div>
+            <p>Akses informasi lengkap mengenai profil sekolah, sejarah singkat, serta visi dan misi utama SMK Negeri 1 Pandawai.</p>
+            <a href="profil.html" class="btn-main">Buka Profil</a>
+        </div>
+
+        <!-- 2. Upload Dokumen Bukti Dukung -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <h3>Upload Dokumen</h3>
+            </div>
+            <p>Fasilitas untuk mengunggah berbagai macam berkas dan bukti dukung administrasi sekolah secara digital.</p>
+            <a href="upload.html" class="btn-main">Upload Berkas</a>
+        </div>
+
+        <!-- 3. Kinerja Penata Layanan Operasional -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-briefcase"></i></div>
+                <h3>Kinerja Penata Layanan</h3>
+            </div>
+            <p>Pilih tahun evaluasi untuk melihat atau mengisi capaian kinerja Penata Layanan Operasional:</p>
+            <div class="year-grid">
+                <a href="kinerja-plo2026.html?tahun=2026" class="btn-year">2026</a>
+                <a href="kinerja-plo.html?tahun=2027" class="btn-year">2027</a>
+                <a href="kinerja-plo.html?tahun=2028" class="btn-year">2028</a>
+                <a href="kinerja-plo.html?tahun=2029" class="btn-year">2029</a>
+                <a href="kinerja-plo.html?tahun=2030" class="btn-year">2030</a>
+            </div>
+        </div>
+
+        <!-- 4. Kinerja Guru -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+                <h3>Kinerja Guru</h3>
+            </div>
+            <p>Pilih tahun evaluasi untuk melihat laporan, perangkat pembelajaran, dan penilaian kinerja Guru:</p>
+            <div class="year-grid">
+                <a href="kinerja-guru.html?tahun=2026" class="btn-year">2026</a>
+                <a href="kinerja-guru.html?tahun=2027" class="btn-year">2027</a>
+                <a href="kinerja-guru.html?tahun=2028" class="btn-year">2028</a>
+                <a href="kinerja-guru.html?tahun=2029" class="btn-year">2029</a>
+                <a href="kinerja-guru.html?tahun=2030" class="btn-year">2030</a>
+            </div>
+        </div>
+
+        <!-- 5. Identitas GTK -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-id-card"></i></div>
+                <h3>Identitas GTK</h3>
+            </div>
+            <p>Data induk dan biodata resmi Guru serta Tenaga Kependidikan (GTK) lingkungan SMK Negeri 1 Pandawai.</p>
+            <a href="identitas-gtk.html" class="btn-main">Lihat Data</a>
+        </div>
+
+        <!-- 6. Absensi Fingerprint Mandiri -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                <h3>Absensi Pegawai</h3>
+            </div>
+            <p>Fasilitas pencatatan jam masuk dan pulang kerja secara mandiri berbasis biometrik lokal untuk seluruh pegawai.</p>
+            <a href="nice absen2.html" class="btn-main">Buka Absensi</a>
+        </div>
+
+    </div> <!-- Penutup utama dari .grid-container -->
+    <!-- Script JavaScript untuk Waktu Realtime -->
+    <script>
+        function updateTime() {
+            const sekarang = new Date();
+            const opsi = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('waktu').innerText = sekarang.toLocaleDateString('id-ID', opsi) + ' WITA';
+        }
+
+        // Jalankan waktu secara realtime tiap detik
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>
